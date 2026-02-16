@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte - Premium Food Ordering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header id="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <button id="backBtn" class="back-btn" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <a href="#" class="logo" data-page="home">
+                        <div class="logo-icon">
+                            <img src="images/images (1).jpg" alt="Byte Logo" class="logo-img">
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-main">Byte<span class="logo-accent"> -</span></span>
+                            <span class="logo-sub">Premium Eats</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <span class="user-avatar" id="userAvatar">👤</span>
+                        <span class="user-name" id="userName">User</span>
+                        <button class="logout-btn" id="logoutBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16,17 21,12 16,7"/>
+                                <line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="delivery-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span>Free Delivery</span>
+                    </div>
+                    <a href="#" class="cart-btn" data-page="cart">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 2L6 9H22l-3-7H9zM7 2v20M17 20v-6M9 20v-6"/>
+                        </svg>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Login Page -->
+            <section id="login-page" class="page">
+                <!-- Video Background -->
+                <div class="video-background">
+                    <video autoplay muted loop playsinline>
+                        <source src="videos/vecteezy_chef-hands-decorating-garnishing-food-plate-italian-french_49532714.mov" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-overlay"></div>
+                </div>
+                
+                <!-- Login Header -->
+                <header class="login-header-bar">
+                    <div class="login-header-content">
+                        <div class="login-logo">
+                            <div class="logo-icon">
+                                <img src="images/images (1).jpg" alt="Byte Logo" class="logo-img">
+                            </div>
+                            <div class="logo-text">
+                                <span class="logo-main">Byte<span class="logo-accent"> -</span></span>
+                                <span class="logo-sub">Premium Eats</span>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <h2>Welcome Back</h2>
+                            <p>Sign in to access your orders and preferences</p>
+                        </div>
+
+                        <form class="login-form" id="loginForm">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <div class="input-group">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <div class="input-group">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                                    <button type="button" class="password-toggle" id="passwordToggle">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="remember">
+                                    <span class="checkmark"></span>
+                                    Remember me
+                                </label>
+                                <a href="#" class="forgot-password">Forgot password?</a>
+                            </div>
+
+                            <button type="submit" class="login-btn">
+                                <span id="loginBtnText">Sign In</span>
+                                <div class="login-spinner" id="loginSpinner" style="display: none;">
+                                    <div class="spinner"></div>
+                                </div>
+                            </button>
+                        </form>
+
+                        <div class="login-divider">
+                            <span>or continue with</span>
+                        </div>
+
+                        <div class="social-login">
+                            <button class="social-btn google-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                                Google
+                            </button>
+                            <button class="social-btn facebook-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                Facebook
+                            </button>
+                        </div>
+
+                        <div class="login-footer">
+                            <p>Don't have an account? <a href="#" class="signup-link">Sign up</a></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Home Page -->
+            <section id="home-page" class="page active">
+                <!-- Hero Section -->
+                <div class="hero">
+                    <div class="hero-bg">
+                        <div class="hero-gradient"></div>
+                        <div class="hero-blob hero-blob-1"></div>
+                        <div class="hero-blob hero-blob-2"></div>
+                    </div>
+                    <div class="hero-content">
+                        <!-- Location Bar -->
+                        <div class="location-bar" id="locationBar" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span class="location-text">Delivering to</span>
+                            <span class="location-city" id="locationCity">Downtown</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                            <div class="location-dropdown" id="locationDropdown" aria-hidden="true">
+                                <button type="button" data-location="Downtown">Downtown</button>
+                                <button type="button" data-location="Midtown">Midtown</button>
+                                <button type="button" data-location="Harbor">Harbor</button>
+                                <button type="button" data-location="Westside">Westside</button>
+                                <button type="button" data-location="Airport">Airport</button>
+                            </div>
+                        </div>
+
+                        <!-- Hero Text -->
+                        <div class="hero-text">
+                            <h1 class="hero-title">
+                                What's on your
+                                <span class="hero-title-accent">
+                                    plate
+                                    <div class="hero-underline"></div>
+                                </span>
+                                <br>
+                                today?
+                            </h1>
+                            <p class="hero-subtitle">
+                                Fresh ingredients, bold flavors. Customize every bite
+                                <br class="hero-break">
+                                and get it delivered in minutes.
+                            </p>
+                        </div>
+
+                        <!-- Promo Pills -->
+                        <div class="promo-pills">
+                            <div class="promo-pill promo-pill-orange">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                                30% off first order
+                            </div>
+                            <div class="promo-pill promo-pill-green">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                Free delivery over $25
+                            </div>
+                            <div class="promo-pill promo-pill-purple">
+                                <span aria-hidden="true">🍰</span>
+                                New: Desserts & Drinks
+                            </div>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="search-container">
+                            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="Search for dishes, cuisines..." class="search-input">
+                            <button class="filter-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="12" x2="20" y2="12"/>
+                                    <line x1="4" y1="6" x2="20" y2="6"/>
+                                    <line x1="4" y1="18" x2="20" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="categories-container">
+                    <div class="categories-scroll" id="categories">
+                        <!-- Categories will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Menu Grid -->
+                <div class="menu-container">
+                    <div class="menu-header">
+                        <h2 class="menu-title">
+                            <span id="category-title">All Dishes</span>
+                            <span class="menu-count">(<span id="item-count">0</span> items)</span>
+                        </h2>
+                        <div class="menu-sort-wrap">
+                            <label for="menuSort" class="sort-label">Sort</label>
+                            <select id="menuSort" class="menu-sort" aria-label="Sort menu">
+                                <option value="">Default</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="name">Name A–Z</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="menu-grid" id="menuGrid">
+                        <!-- Menu items will be populated by JavaScript -->
+                    </div>
+                    <div class="no-results" id="noResults" style="display: none;">
+                        <span class="no-results-emoji">🍽️</span>
+                        <h3>No dishes found</h3>
+                        <p>Try a different search term or browse another category</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cart Page -->
+            <section id="cart-page" class="page">
+                <div class="cart-container">
+                    <div class="empty-cart" id="emptyCart">
+                        <div class="empty-cart-icon">
+                            <span class="empty-cart-emoji">🛒</span>
+                        </div>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added anything yet. Browse our menu to find something delicious.</p>
+                        <a href="#" class="browse-menu-btn" data-page="home">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Browse Menu
+                        </a>
+                    </div>
+                    <div class="cart-content" id="cartContent" style="display: none;">
+                        <!-- Cart items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order Status Page -->
+            <section id="order-status-page" class="page">
+                <div class="order-status-container">
+                    <div class="no-order" id="noOrder">
+                        <div class="no-order-icon">
+                            <span class="no-order-emoji">📦</span>
+                        </div>
+                        <h2>No active order</h2>
+                        <p>Place an order to track it here</p>
+                        <a href="#" class="back-to-menu-btn" data-page="home">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Back to Menu
+                        </a>
+                    </div>
+                    <div class="order-tracking" id="orderTracking" style="display: none;">
+                        <!-- Order tracking will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Site Footer -->
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span class="footer-logo">Byte<span class="logo-accent"> -</span></span>
+                    <span class="footer-tagline">Premium Eats · Delivered</span>
+                </div>
+                <nav class="footer-nav">
+                    <a href="#" class="footer-link" data-page="home">Home</a>
+                    <a href="#" class="footer-link" data-page="cart">Cart</a>
+                    <a href="#" class="footer-link" data-action="contact">Contact</a>
+                    <a href="#" class="footer-link" data-action="about">About</a>
+                    <a href="#" class="footer-link" data-action="faq">FAQ</a>
+                </nav>
+                <div class="footer-bottom">
+                    <p class="footer-copyright">© 2025 anol. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Product Modal -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="product-modal" id="productModal">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Info Modal (Contact / About / FAQ) -->
+        <div class="info-modal-overlay" id="infoModalOverlay" aria-hidden="true">
+            <div class="info-modal" id="infoModal" role="dialog" aria-labelledby="infoModalTitle">
+                <div class="info-modal-header">
+                    <h2 id="infoModalTitle">Info</h2>
+                    <button type="button" class="info-modal-close" id="infoModalClose" aria-label="Close">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="info-modal-body" id="infoModalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
