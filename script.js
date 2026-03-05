@@ -533,14 +533,14 @@ const elements = {
   userAvatar: document.getElementById('userAvatar'),
   userName: document.getElementById('userName'),
   logoutBtn: document.getElementById('logoutBtn'),
-  
+
   // Pages
   mainContent: document.getElementById('main-content'),
   loginPage: document.getElementById('login-page'),
   homePage: document.getElementById('home-page'),
   cartPage: document.getElementById('cart-page'),
   orderStatusPage: document.getElementById('order-status-page'),
-  
+
   // Login Form
   loginForm: document.getElementById('loginForm'),
   emailInput: document.getElementById('email'),
@@ -550,7 +550,7 @@ const elements = {
   loginBtn: document.getElementById('loginBtn'),
   loginBtnText: document.getElementById('loginBtnText'),
   loginSpinner: document.getElementById('loginSpinner'),
-  
+
   // Product Modal
   modalOverlay: document.getElementById('modalOverlay'),
   productModal: document.getElementById('productModal'),
@@ -562,11 +562,11 @@ const elements = {
   modalSizes: document.getElementById('modalSizes'),
   modalAddons: document.getElementById('modalAddons'),
   modalAddToCart: document.getElementById('modalAddToCart'),
-  
+
   // Cart
   emptyCart: document.getElementById('emptyCart'),
   cartContent: document.getElementById('cartContent'),
-  
+
   // Order Status
   orderId: document.getElementById('orderId'),
   orderItems: document.getElementById('orderItems'),
@@ -576,10 +576,10 @@ const elements = {
   orderProgress: document.getElementById('orderProgress'),
   noOrder: document.getElementById('noOrder'),
   orderTracking: document.getElementById('orderTracking'),
-  
+
   // Category Buttons
   categoryButtons: document.querySelectorAll('.category-btn'),
-  
+
   // Home Page Elements
   categories: document.getElementById('categories'),
   categoryTitle: document.getElementById('category-title'),
@@ -591,7 +591,7 @@ const elements = {
   locationBar: document.getElementById('locationBar'),
   locationDropdown: document.getElementById('locationDropdown'),
   locationCity: document.getElementById('locationCity'),
-  
+
   // Info Modal Elements
   infoModalOverlay: document.getElementById('infoModalOverlay'),
   infoModal: document.getElementById('infoModal'),
@@ -614,7 +614,8 @@ const state = {
   deliveryLocation: 'Downtown',
   sortBy: '',
   promoCode: null,
-  promoDiscount: 0
+  promoDiscount: 0,
+  colorBendsInstance: null
 };
 
 // Initialize DOM references
@@ -630,7 +631,7 @@ function navigate(page) {
     navigate('login');
     return;
   }
-  
+
   // Hide all pages
   Object.values({
     loginPage: elements.loginPage,
@@ -640,17 +641,45 @@ function navigate(page) {
   }).forEach(pageEl => {
     if (pageEl) pageEl.classList.remove('active');
   });
-  
+
   // Show target page
-  switch(page) {
+  switch (page) {
     case 'login':
       elements.loginPage.classList.add('active');
       elements.header.style.display = 'none';
+
+      // Initialize ColorBends on login page
+      if (!state.colorBendsInstance && window.ColorBends) {
+        state.colorBendsInstance = new window.ColorBends(
+          document.getElementById('color-bends-bg'),
+          {
+            colors: ["#ff5c7a", "#8a5cff", "#00ffd1"],
+            rotation: 0,
+            speed: 0.2,
+            scale: 1,
+            frequency: 1,
+            warpStrength: 1,
+            mouseInfluence: 1,
+            parallax: 0.5,
+            noise: 0.1,
+            transparent: true,
+            autoRotate: 0
+          }
+        );
+      }
+
       loadLoginPage();
       break;
     case 'home':
       elements.homePage.classList.add('active');
       elements.header.style.display = 'flex';
+
+      // Destroy colorBends instance to save resources when not on login page
+      if (state.colorBendsInstance) {
+        state.colorBendsInstance.destroy();
+        state.colorBendsInstance = null;
+      }
+
       loadHomePage();
       break;
     case 'cart':
@@ -664,7 +693,7 @@ function navigate(page) {
       loadOrderStatusPage();
       break;
   }
-  
+
   state.currentPage = page;
   updateHeader();
 }
@@ -672,11 +701,11 @@ function navigate(page) {
 function updateHeader() {
   const showBackBtn = state.currentPage !== 'home';
   elements.backBtn.style.display = showBackBtn ? 'flex' : 'none';
-  
+
   // Update user info display
   const userInfo = document.getElementById('userInfo');
   const deliveryBadge = document.querySelector('.delivery-badge');
-  
+
   if (state.isAuthenticated && state.user) {
     // Show user info
     if (userInfo) {
@@ -684,12 +713,12 @@ function updateHeader() {
       document.getElementById('userAvatar').textContent = state.user.avatar || '👤';
       document.getElementById('userName').textContent = state.user.name || 'User';
     }
-    
+
     // Hide delivery badge when logged in
     if (deliveryBadge) {
       deliveryBadge.style.display = 'none';
     }
-    
+
     // Add logout button event listener
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
@@ -700,20 +729,20 @@ function updateHeader() {
     if (userInfo) {
       userInfo.style.display = 'none';
     }
-    
+
     // Show delivery badge when not logged in
     if (deliveryBadge) {
       deliveryBadge.style.display = 'flex';
     }
   }
-  
+
   // Update cart button state
   const totalItems = state.cart.reduce((sum, item) => {
     const quantity = parseInt(item.quantity) || 0;
     return sum + quantity;
   }, 0);
   elements.cartCount.textContent = totalItems;
-  
+
   if (totalItems > 0) {
     elements.cartBtn.classList.add('has-items');
   } else {
@@ -742,13 +771,13 @@ function validatePassword(password) {
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumbers = /\d/.test(password);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-  
+
   return {
-    isValid: password.length >= minLength && 
-              password.length <= maxLength &&
-              hasUpperCase && 
-              hasLowerCase && 
-              hasNumbers,
+    isValid: password.length >= minLength &&
+      password.length <= maxLength &&
+      hasUpperCase &&
+      hasLowerCase &&
+      hasNumbers,
     errors: {
       length: password.length < minLength ? `Password must be at least ${minLength} characters` : null,
       upperCase: !hasUpperCase ? 'Password must contain at least one uppercase letter' : null,
@@ -764,7 +793,7 @@ function showPasswordRequirements(requirements) {
   if (existingRequirements) {
     existingRequirements.remove();
   }
-  
+
   const requirementsDiv = document.createElement('div');
   requirementsDiv.className = 'password-requirements';
   requirementsDiv.innerHTML = `
@@ -792,7 +821,7 @@ function showPasswordRequirements(requirements) {
       </div>
     </div>
   `;
-  
+
   requirementsDiv.style.cssText = `
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -801,7 +830,7 @@ function showPasswordRequirements(requirements) {
     margin-top: 8px;
     font-size: 12px;
   `;
-  
+
   // Append below the input row (not inside .input-group),
   // otherwise the flex layout makes the password "bar" expand.
   const passwordGroup = elements.passwordInput?.closest('.form-group');
@@ -817,13 +846,13 @@ function preventBruteForce() {
   const lastAttemptTime = parseInt(localStorage.getItem('lastAttemptTime') || '0');
   const now = Date.now();
   const lockoutDuration = 15 * 60 * 1000; // 15 minutes
-  
+
   // Check if user is locked out
   if (loginAttempts >= 5 && (now - lastAttemptTime) < lockoutDuration) {
     const remainingTime = Math.ceil((lockoutDuration - (now - lastAttemptTime)) / 60000);
     throw new Error(`Too many failed attempts. Please try again in ${remainingTime} minutes.`);
   }
-  
+
   // Reset attempts if lockout period has passed
   if ((now - lastAttemptTime) > lockoutDuration) {
     localStorage.setItem('loginAttempts', '0');
@@ -832,7 +861,7 @@ function preventBruteForce() {
 
 function recordLoginAttempt(success) {
   const attempts = parseInt(localStorage.getItem('loginAttempts') || '0');
-  
+
   if (success) {
     // Reset on successful login
     localStorage.setItem('loginAttempts', '0');
@@ -857,24 +886,24 @@ function addPasswordStrengthIndicator(password) {
   if (existingStrength) {
     existingStrength.remove();
   }
-  
+
   if (password.length === 0) return;
-  
+
   // Calculate password strength
   let strength = 0;
   let strengthText = 'Weak';
   let strengthClass = 'weak';
-  
+
   // Length check
   if (password.length >= 8) strength += 1;
   if (password.length >= 12) strength += 1;
-  
+
   // Character variety checks
   if (/[a-z]/.test(password)) strength += 1;
   if (/[A-Z]/.test(password)) strength += 1;
   if (/[0-9]/.test(password)) strength += 1;
   if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
-  
+
   // Determine strength level
   if (strength <= 2) {
     strengthText = 'Weak';
@@ -886,7 +915,7 @@ function addPasswordStrengthIndicator(password) {
     strengthText = 'Strong';
     strengthClass = 'strong';
   }
-  
+
   // Create strength indicator
   const strengthDiv = document.createElement('div');
   strengthDiv.className = `password-strength ${strengthClass}`;
@@ -894,13 +923,13 @@ function addPasswordStrengthIndicator(password) {
     <div class="password-strength-bar"></div>
     <div class="strength-text">${strengthText}</div>
   `;
-  
+
   strengthDiv.style.cssText = `
     margin-top: 8px;
     font-size: 12px;
     color: var(--color-text-light);
   `;
-  
+
   // Append below the input row (not inside .input-group)
   const passwordGroup = elements.passwordInput?.closest('.form-group');
   if (passwordGroup) {
@@ -921,13 +950,13 @@ function loadLoginPage() {
   if (elements.loginForm) {
     elements.loginForm.reset();
   }
-  
+
   // Check if user is already logged in
   if (state.isAuthenticated) {
     navigate('home');
     return;
   }
-  
+
   // Add CSRF token to form
   const csrfToken = addCSRFToken();
   const csrfInput = document.createElement('input');
@@ -943,7 +972,7 @@ function showLoginError(message) {
   if (existingError) {
     existingError.remove();
   }
-  
+
   const errorDiv = document.createElement('div');
   errorDiv.className = 'login-error';
   errorDiv.textContent = message;
@@ -957,9 +986,9 @@ function showLoginError(message) {
     font-size: 14px;
     font-weight: 500;
   `;
-  
+
   elements.loginForm.insertBefore(errorDiv, elements.loginForm.firstChild);
-  
+
   setTimeout(() => {
     errorDiv.remove();
   }, 5000);
@@ -968,7 +997,7 @@ function showLoginError(message) {
 function setLoginLoading(loading) {
   state.isLoading = loading;
   const loginBtn = elements.loginForm.querySelector('.login-btn');
-  
+
   if (loading) {
     loginBtn.disabled = true;
     elements.loginBtnText.style.display = 'none';
@@ -984,20 +1013,20 @@ async function handleLogin(email, password, remember) {
   try {
     // Prevent brute force attacks
     preventBruteForce();
-    
+
     setLoginLoading(true);
-    
+
     // Sanitize inputs
     const sanitizedEmail = sanitizeInput(email);
     const sanitizedPassword = password; // Don't sanitize password for security reasons
-    
+
     // Validate email format
     if (!validateEmail(sanitizedEmail)) {
       showLoginError('Please enter a valid email address');
       recordLoginAttempt(false);
       return;
     }
-    
+
     // Validate password requirements
     const passwordValidation = validatePassword(sanitizedPassword);
     if (!passwordValidation.isValid) {
@@ -1006,7 +1035,7 @@ async function handleLogin(email, password, remember) {
       recordLoginAttempt(false);
       return;
     }
-    
+
     // Validate CSRF token
     const csrfToken = document.querySelector('input[name="csrf_token"]')?.value;
     if (!csrfToken || !validateCSRFToken(csrfToken)) {
@@ -1014,10 +1043,10 @@ async function handleLogin(email, password, remember) {
       recordLoginAttempt(false);
       return;
     }
-    
+
     // Simulate API call with delay to prevent timing attacks
     await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
-    
+
     // Mock authentication - in real app, this would be an API call
     if (sanitizedEmail === 'user@example.com' && sanitizedPassword === 'Password123!') {
       const user = {
@@ -1027,25 +1056,25 @@ async function handleLogin(email, password, remember) {
         avatar: '👤',
         loginTime: new Date().toISOString()
       };
-      
+
       state.user = user;
       state.isAuthenticated = true;
-      
+
       // Store in localStorage if remember is checked
       if (remember) {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('loginTime', user.loginTime);
       }
-      
+
       // Clear password requirements
       const requirementsDiv = document.querySelector('.password-requirements');
       if (requirementsDiv) {
         requirementsDiv.remove();
       }
-      
+
       recordLoginAttempt(true);
-      
+
       // Navigate to home
       navigate('home');
     } else {
@@ -1065,23 +1094,23 @@ function handleLogout() {
   state.isAuthenticated = false;
   state.cart = [];
   state.order = null;
-  
+
   // Clear localStorage
   localStorage.removeItem('user');
   localStorage.removeItem('isAuthenticated');
-  
+
   navigate('login');
 }
 
 function checkAuthStatus() {
   const storedUser = localStorage.getItem('user');
   const storedAuth = localStorage.getItem('isAuthenticated');
-  
+
   if (storedUser && storedAuth === 'true') {
     try {
       state.user = JSON.parse(storedUser);
       state.isAuthenticated = true;
-      
+
       // Navigate to home if on login page
       if (state.currentPage === 'login') {
         navigate('home');
@@ -1100,19 +1129,19 @@ async function handleGoogleLogin() {
     setLoginLoading(true);
     // Simulate Google OAuth
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const user = {
       id: 2,
       name: 'Google User',
       email: 'googleuser@gmail.com',
       avatar: '👤'
     };
-    
+
     state.user = user;
     state.isAuthenticated = true;
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('isAuthenticated', 'true');
-    
+
     navigate('home');
   } catch (error) {
     showLoginError('Google login failed. Please try again.');
@@ -1126,19 +1155,19 @@ async function handleFacebookLogin() {
     setLoginLoading(true);
     // Simulate Facebook OAuth
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const user = {
       id: 3,
       name: 'Facebook User',
       email: 'facebookuser@gmail.com',
       avatar: '👤'
     };
-    
+
     state.user = user;
     state.isAuthenticated = true;
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('isAuthenticated', 'true');
-    
+
     navigate('home');
   } catch (error) {
     showLoginError('Facebook login failed. Please try again.');
@@ -1165,7 +1194,7 @@ function renderCategories() {
     Desserts: '🍰',
     Drinks: '🍹',
   };
-  
+
   elements.categories.innerHTML = categories.map(category => `
     <button class="category-btn ${state.activeCategory === category ? 'active' : ''}" 
             data-category="${category}">
@@ -1173,7 +1202,7 @@ function renderCategories() {
       ${category}
     </button>
   `).join('');
-  
+
   // Add event listeners
   elements.categories.querySelectorAll('.category-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1188,7 +1217,7 @@ function renderMenuItems() {
   let filtered = menuItems.filter(item => {
     const matchCategory = state.activeCategory === 'All' || item.category === state.activeCategory;
     const matchSearch = item.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-                       item.description.toLowerCase().includes(state.searchQuery.toLowerCase());
+      item.description.toLowerCase().includes(state.searchQuery.toLowerCase());
     return matchCategory && matchSearch;
   });
 
@@ -1200,28 +1229,28 @@ function renderMenuItems() {
   } else if (state.sortBy === 'name') {
     filtered = [...filtered].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
-  
+
   // Update title and count
   elements.categoryTitle.textContent = state.activeCategory === 'All' ? 'All Dishes' : state.activeCategory;
   elements.itemCount.textContent = filtered.length;
   if (elements.menuSort) elements.menuSort.value = state.sortBy;
-  
+
   // Show/hide no results
   if (filtered.length === 0) {
     elements.menuGrid.style.display = 'none';
     elements.noResults.style.display = 'block';
     return;
   }
-  
+
   elements.menuGrid.style.display = 'grid';
   elements.noResults.style.display = 'none';
-  
+
   // Render menu items
   elements.menuGrid.innerHTML = filtered.map((item, index) => {
     const isPopular = Math.random() > 0.6;
     const rating = (4 + Math.random()).toFixed(1);
     const time = 15 + Math.floor(Math.random() * 20);
-    
+
     return `
       <div class="menu-card" data-item-id="${item.id}" style="animation-delay: ${index * 0.06}s">
         ${isPopular ? `
@@ -1283,7 +1312,7 @@ function renderMenuItems() {
       </div>
     `;
   }).join('');
-  
+
   // Add event listeners
   elements.menuGrid.querySelectorAll('.menu-card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -1294,7 +1323,7 @@ function renderMenuItems() {
       }
     });
   });
-  
+
   elements.menuGrid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1308,10 +1337,10 @@ function renderMenuItems() {
 // Product Modal
 function openProductModal(item) {
   state.selectedItem = item;
-  
+
   const rating = (4 + Math.random()).toFixed(1);
   const time = 15 + Math.floor(Math.random() * 20);
-  
+
   elements.productModal.innerHTML = `
     <div class="modal-header">
       <div class="modal-image">
@@ -1415,14 +1444,14 @@ function openProductModal(item) {
       </div>
     </div>
   `;
-  
+
   // Show modal
   elements.modalOverlay.classList.add('active');
-  
+
   // Add event listeners
   const closeBtn = elements.productModal.querySelector('.modal-close-btn');
   closeBtn.addEventListener('click', closeProductModal);
-  
+
   // Size selection
   const sizeOptions = elements.productModal.querySelectorAll('.size-option');
   sizeOptions[0].classList.add('selected');
@@ -1432,22 +1461,22 @@ function openProductModal(item) {
       btn.classList.add('selected');
     });
   });
-  
+
   // Quantity controls
   const quantityInput = elements.productModal.querySelector('.quantity-input');
   const decreaseBtn = elements.productModal.querySelector('.quantity-decrease');
   const increaseBtn = elements.productModal.querySelector('.quantity-increase');
-  
+
   decreaseBtn.addEventListener('click', () => {
     const current = parseInt(quantityInput.value);
     if (current > 1) quantityInput.value = current - 1;
   });
-  
+
   increaseBtn.addEventListener('click', () => {
     const current = parseInt(quantityInput.value);
     if (current < 99) quantityInput.value = current + 1;
   });
-  
+
   // Add to cart
   const addToCartBtn = elements.productModal.querySelector('.add-to-cart-modal-btn');
   addToCartBtn.addEventListener('click', () => {
@@ -1457,14 +1486,14 @@ function openProductModal(item) {
         const addon = item.customizations.addons.find(a => a.id === input.dataset.addonId);
         return addon.label;
       });
-    
+
     const sizePrice = parseFloat(selectedSize.dataset.price);
     const addonPrice = Array.from(elements.productModal.querySelectorAll('.addon-option input:checked'))
       .reduce((sum, input) => sum + parseFloat(input.dataset.addonPrice), 0);
-    
+
     const unitPrice = item.price + sizePrice + addonPrice;
     const quantity = parseInt(quantityInput.value);
-    
+
     addToCart({
       ...item,
       size: selectedSize.textContent.trim(),
@@ -1473,7 +1502,7 @@ function openProductModal(item) {
       quantity,
       totalPrice: unitPrice * quantity
     });
-    
+
     closeProductModal();
   });
 }
@@ -1488,7 +1517,7 @@ function addToCart(item) {
   // Ensure item has valid quantity
   const quantity = parseInt(item.quantity) || 1;
   const unitPrice = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
-  
+
   const cartItem = {
     ...item,
     quantity,
@@ -1496,20 +1525,20 @@ function addToCart(item) {
     totalPrice: unitPrice * quantity,
     cartId: Date.now()
   };
-  
-  const existingIndex = state.cart.findIndex(existingItem => 
-    existingItem.id === cartItem.id && 
-    existingItem.size === cartItem.size && 
+
+  const existingIndex = state.cart.findIndex(existingItem =>
+    existingItem.id === cartItem.id &&
+    existingItem.size === cartItem.size &&
     JSON.stringify(existingItem.addons) === JSON.stringify(cartItem.addons)
   );
-  
+
   if (existingIndex >= 0) {
     state.cart[existingIndex].quantity += quantity;
     state.cart[existingIndex].totalPrice = state.cart[existingIndex].unitPrice * state.cart[existingIndex].quantity;
   } else {
     state.cart.push(cartItem);
   }
-  
+
   updateHeader();
   showAddedNotification();
 }
@@ -1552,9 +1581,9 @@ function showAddedNotification() {
     z-index: 1000;
     animation: slideInUp 0.3s ease;
   `;
-  
+
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.remove();
   }, 2000);
@@ -1585,7 +1614,7 @@ function applyPromoCode(code, subtotal) {
 function loadCartPage() {
   const emptyCart = document.getElementById('emptyCart');
   const cartContent = document.getElementById('cartContent');
-  
+
   if (state.cart.length === 0) {
     emptyCart.style.display = 'block';
     cartContent.style.display = 'none';
@@ -1593,23 +1622,23 @@ function loadCartPage() {
     state.promoDiscount = 0;
     return;
   }
-  
+
   emptyCart.style.display = 'none';
   cartContent.style.display = 'block';
-  
+
   const subtotal = state.cart.reduce((sum, item) => {
     const itemTotal = parseFloat(item.totalPrice) || (parseFloat(item.unitPrice) * parseInt(item.quantity)) || 0;
     return sum + itemTotal;
   }, 0);
   const total = Math.max(0, subtotal - (state.promoDiscount || 0));
-  
+
   const promoRow = state.promoCode
     ? `<div class="promo-applied">✓ ${state.promoCode} applied (-$${state.promoDiscount.toFixed(2)})</div>`
     : `<div class="promo-row">
          <input type="text" id="promoInput" placeholder="Promo code" class="promo-input">
          <button type="button" class="promo-apply-btn" id="promoApplyBtn">Apply</button>
        </div>`;
-  
+
   cartContent.innerHTML = `
     <div class="cart-items">
       ${state.cart.map(item => `
@@ -1669,7 +1698,7 @@ function loadCartPage() {
       </button>
     </div>
   `;
-  
+
   // Promo apply
   const promoApplyBtn = document.getElementById('promoApplyBtn');
   const promoInput = document.getElementById('promoInput');
@@ -1697,7 +1726,7 @@ function loadCartPage() {
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', checkout);
   }
-  
+
   // Add event listeners for cart item controls
   document.querySelectorAll('.decrease-btn, .increase-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -1710,7 +1739,7 @@ function loadCartPage() {
       }
     });
   });
-  
+
   document.querySelectorAll('.remove-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const cartId = parseInt(e.target.dataset.cartId);
@@ -1723,16 +1752,16 @@ function loadCartPage() {
 function loadOrderStatusPage() {
   const noOrder = document.getElementById('noOrder');
   const orderTracking = document.getElementById('orderTracking');
-  
+
   if (!state.order) {
     noOrder.style.display = 'block';
     orderTracking.style.display = 'none';
     return;
   }
-  
+
   noOrder.style.display = 'none';
   orderTracking.style.display = 'block';
-  
+
   // Render order tracking (simplified version)
   orderTracking.innerHTML = `
     <div class="order-header">
@@ -1765,7 +1794,7 @@ function loadOrderStatusPage() {
       </button>
     </div>
   `;
-  
+
   // Add event listener for new order button
   const newOrderBtn = document.getElementById('newOrderBtn');
   if (newOrderBtn) {
@@ -1775,13 +1804,13 @@ function loadOrderStatusPage() {
 
 function checkout() {
   if (state.cart.length === 0) return;
-  
+
   const subtotal = state.cart.reduce((sum, item) => {
     const itemTotal = parseFloat(item.totalPrice) || (parseFloat(item.unitPrice) * parseInt(item.quantity)) || 0;
     return sum + itemTotal;
   }, 0);
   const total = Math.max(0, subtotal - (state.promoDiscount || 0));
-  
+
   // Create order
   state.order = {
     id: `ORD-${Date.now().toString(36).toUpperCase()}`,
@@ -1790,13 +1819,13 @@ function checkout() {
     placedAt: new Date().toISOString(),
     estimatedDelivery: '25-35 min'
   };
-  
+
   // Clear cart and promo
   state.cart = [];
   state.promoCode = null;
   state.promoDiscount = 0;
   updateHeader();
-  
+
   // Navigate to order status
   navigate('order-status');
 }
@@ -1857,12 +1886,12 @@ function setupEventListeners() {
       navigate(link.dataset.page);
     });
   });
-  
+
   // Back button
   elements.backBtn.addEventListener('click', () => {
     navigate('home');
   });
-  
+
   // Login form
   if (elements.loginForm) {
     elements.loginForm.addEventListener('submit', (e) => {
@@ -1870,20 +1899,20 @@ function setupEventListeners() {
       const email = elements.emailInput.value.trim();
       const password = elements.passwordInput.value;
       const remember = elements.rememberCheckbox.checked;
-      
+
       if (!email || !password) {
         showLoginError('Please enter both email and password');
         return;
       }
-      
+
       handleLogin(email, password, remember);
     });
-    
+
     // Real-time email validation
     elements.emailInput.addEventListener('input', (e) => {
       const email = e.target.value.trim();
       const inputGroup = e.target.closest('.input-group');
-      
+
       if (email && !validateEmail(email)) {
         inputGroup.classList.add('error');
         inputGroup.classList.remove('success');
@@ -1894,16 +1923,16 @@ function setupEventListeners() {
         inputGroup.classList.remove('error', 'success');
       }
     });
-    
+
     // Real-time password validation
     elements.passwordInput.addEventListener('input', (e) => {
       const password = e.target.value;
       const inputGroup = e.target.closest('.input-group');
-      
+
       if (password.length > 0) {
         const validation = validatePassword(password);
         showPasswordRequirements(validation);
-        
+
         if (validation.isValid) {
           inputGroup.classList.add('success');
           inputGroup.classList.remove('error');
@@ -1911,7 +1940,7 @@ function setupEventListeners() {
           inputGroup.classList.add('error');
           inputGroup.classList.remove('success');
         }
-        
+
         // Add password strength indicator
         addPasswordStrengthIndicator(password);
       } else {
@@ -1926,25 +1955,25 @@ function setupEventListeners() {
         }
       }
     });
-    
+
     // Focus/blur effects
     [elements.emailInput, elements.passwordInput].forEach(input => {
       input.addEventListener('focus', () => {
         input.closest('.input-group').classList.add('focused');
       });
-      
+
       input.addEventListener('blur', () => {
         input.closest('.input-group').classList.remove('focused');
       });
     });
   }
-  
+
   // Password toggle
   if (elements.passwordToggle) {
     elements.passwordToggle.addEventListener('click', () => {
       const type = elements.passwordInput.type === 'password' ? 'text' : 'password';
       elements.passwordInput.type = type;
-      
+
       // Update icon
       elements.passwordToggle.innerHTML = type === 'password' ? `
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1958,23 +1987,23 @@ function setupEventListeners() {
       `;
     });
   }
-  
+
   // Social login buttons
   document.querySelector('.google-btn')?.addEventListener('click', handleGoogleLogin);
   document.querySelector('.facebook-btn')?.addEventListener('click', handleFacebookLogin);
-  
+
   // Forgot password link
   document.querySelector('.forgot-password')?.addEventListener('click', (e) => {
     e.preventDefault();
     showLoginError('Password reset functionality coming soon!');
   });
-  
+
   // Signup link
   document.querySelector('.signup-link')?.addEventListener('click', (e) => {
     e.preventDefault();
     showLoginError('Signup functionality coming soon!');
   });
-  
+
   // Search
   elements.searchInput.addEventListener('input', (e) => {
     state.searchQuery = e.target.value;
@@ -2025,14 +2054,14 @@ function setupEventListeners() {
       if (e.target === elements.infoModalOverlay) closeInfoModal();
     });
   }
-  
+
   // Modal overlay click
   elements.modalOverlay.addEventListener('click', (e) => {
     if (e.target === elements.modalOverlay) {
       closeProductModal();
     }
   });
-  
+
   // Header scroll effect
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) {
@@ -2055,10 +2084,10 @@ function setupEventListeners() {
 function init() {
   initializeElements();
   setupEventListeners();
-  
+
   // Check authentication status first
   checkAuthStatus();
-  
+
   // Navigate to appropriate page
   if (state.isAuthenticated) {
     navigate('home');
