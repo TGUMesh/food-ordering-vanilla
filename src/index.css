@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --bg-base: #f8f8f8;
+  --text-main: #212121;
+  --text-muted: #525252;
+  --border-light: #d1d1d1;
+  --card-bg: #ffffff;
+  --pill-bg: #f5f5f5;
+  --accent: #ff3300;
+  --inverse-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-base: #101010;
+  --text-main: #f5f5f5;
+  --text-muted: #a3a3a3;
+  --border-light: #333333;
+  --card-bg: #1c1c1c;
+  --pill-bg: #222222;
+  --accent: #ff3300;
+  --inverse-text: #000000;
+}
+
+@theme {
+  --color-background: var(--bg-base);
+  --color-text-primary: var(--text-main);
+  --color-text-body: var(--text-muted);
+  --color-border-light: var(--border-light);
+  --color-card-bg: var(--card-bg);
+  --color-pill-bg: var(--pill-bg);
+  --color-accent: var(--accent);
+  --color-inverse: var(--inverse-text);
+  --font-sans: "Inter", "Lato", system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
